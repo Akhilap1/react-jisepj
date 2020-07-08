@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>IO Stats</title>
+	<link rel="stylesheet" type="text/css" href= "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href= "https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
+
+   <!-- <link href="font-awesome-4.3.0/css/font-awesome.min.css" rel="stylesheet">  -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+	<!-- Bootstrap Date-Picker Plugin -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+	<script src="plotly-latest.min.js"></script>
+
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	
+	<!-- script src="https://code.jquery.com/jquery-1.12.4.js"></script -->
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script type="text/javascript" src="canvasJS/canvasjs.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
+	<script src="https://d3js.org/d3-queue.v3.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.6/dc.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+
+   <script> 
+    $(function(){
+
+			$("#sidebar").load("SideBarAdminNew.html");
+			verifyLogin(false);
+			//setNavigation();
+
+	});
+
+	function verifyLogin(mustVerify) {
+
+		if (mustVerify == true)
+		{
+
+			  $.ajax({
+					type:'GET',
+					url:"PHP/SideBar.php",      
+					success:function(res, textStatus, jXHR) {
+
+						try {
+								$ext_auth = JSON.parse(res );
+								if( $ext_auth['result']  == 1 ) {
+									console.log("Login Success "+res);
+									//$("#sidebar").load("SideBar.html");
+									if ($ext_auth['role'] == "admin")
+									{
+										$("#sidebar").load("SideBarAdminNew.html");
+
+									}
+									else
+									{
+										$("#sidebar").load("SideBarNew.html");
+									}
+
+									$('#LoginLogout').html("Logout");
+									//setNavigation();
+								}
+								else{
+					 				alert("Please Login");
+							   		$("#page-content-wrapper").hide();
+									$("#sidebar").load("PHP/UserLogin.php");
+								}
+					}catch(e)
+					{
+			 				alert(res);
+					   		$("#page-content-wrapper").hide();
+							$("#sidebar").load("PHP/UserLogin.php");
+
+					}
+					}, error: function(request,testStatus,errorThrown) {
+						alert("Please Login");
+					   $("#page-content-wrapper").hide();
+					   $("#sidebar").load("PHP/UserLogin.php");
+					}
+				});
+
+		}
+		else {
+		
+				$('#LoginLogout').html("Logout");
+				///LoginLogout
+				//setNavigation();
+		}
+	}
+
+
+
+	function setNavigation() {
+		var path = window.location.pathname;
+		path = path.replace(/\/$/, "");
+		path = decodeURIComponent(path);
+		var filename = path.substr(path.lastIndexOf("/")+1);
+		//alert(filename);
+		$(".nav-stacked a").each(function () {
+		    var href = $(this).attr('href');
+			href = href.substr(href.lastIndexOf("/")+1);
+		    if (href == filename) {
+		        $(this).closest('li').addClass('active');
+		    }
+		});
+	}
+ 
+
+    </script> 
+
+<style> /* set the CSS */
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+td, th {
+  padding: 1px 4px;
+  border: 1px black solid;
+}
+
+</style>
+</head>
+<body>
+ <div >
+	<img src = "../HOME/facility-header-nodiv-crop.png" width ="100%"/>
+  </div>
+    <div id="wrapper">
+ 		<div id="sidebar"></div>
+        <!-- Sidebar -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid xyz">
+				<br/>
+                <div class="row">
+						<div class="col-lg-8" id="containerHeatMap1" style="height: 600px; width: 600px"></div>
+						<div class="col-lg-8"id="containerHeatMap2" style="height: 600px; width: 600px"></div>
+				</div> 
+                <div class="row">
+						<div class="col-lg-6" id="container1" style="height: 600px; width: 600px"></div>
+						<div class="col-lg-6" id="container2" style="height: 600px; width: 600px"></div>
+
+				</div> 
+
+			</div>
+        <!-- /#page-content-wrapper -->
+		</div> <!---Wrapper-->
+	</div>
+
+</body>
+<script type="text/javascript">
+
+var max_nodes = 1468;
+var DATASET1= null;
+var DATASET2= null;
+var DATASET3= null;
+var chart =null;
+
+var IODataSET = null;
+var DeptDataSet = null;
+var UserDataSet = null;
+var select1 = dc.selectMenu('#selectJobID');
+var timeChart = dc.lineChart("#dc-time-chart");
+
+$(document).ready(function () {
+
+	today = new Date();
+	var dd = today.getDate();  
+	var mm = today.getMonth()+1;   
+	var yyyy = today.getFullYear();
+	var toDate   = yyyy+"-"+mm+"-"+dd+ " " +today.getHours()+":" +today.getMinutes();
+	var fromDate = yyyy+"-"+mm+"-"+dd+ " 00:00";
+	readIOStatsData();
+
+});
+////////////////////////////////////////////////////////////////////
+function unpack(rows, key) {
+    return rows.map(function(row) { return row[key]; });
+}
+
+////////////////////////////////////////////////////////////////////
+function readIOStatsData(){
+
+	datafilename = "HourlyIOStats.csv";
+	d3.queue()
+	.defer(d3.csv, datafilename)
+	//.defer(d3.csv, "./DATA/Depts.csv")
+	//.defer(d3.csv, "./DATA/CleanUserGroups.csv")
+	.await(function(error, IOData){ //, DeptData, UserData) {
+		if (error) {
+		    console.error('Oh dear, something went wrong: ' + error);
+		}
+		else {
+
+			processIOData(IOData);
+		    //processJobData(JobData, DeptData, UserData, MMMYYYY, i);
+		}
+	});
+}
+///////////////////////////////////////////////////////////////////////
+function plotHeatMap2(xValues, yValues, zValues, d1, d2)
+{
+
+
+var colorscaleValue = [
+  [0, '#3D9970'],
+  [100000, '#001f3f']
+];
+
+
+var layout = {
+  title: 'Write IO Stats' +" " + d1.toString() + " - " + d2.toString(),
+  xaxis: {
+    autorange: true,
+  /*  range: [d1, d2],
+    rangeselector: {buttons: [
+        {
+          count: 1,
+          label: '1h',
+          step: 'hour',
+          stepmode: 'backward'
+        },
+        {
+          count: 6,
+          label: '6h',
+          step: 'hour',
+          stepmode: 'forward'
+        },
+        {step: 'all'}
+      ]},
+    rangeslider: {range: [d1, d2]},*/
+    type: 'date'
+  },
+  yaxis: {
+    autorange: true
+    //range: [86.8700008333, 138.870004167],
+    //type: 'linear'
+  }
+};
+
+var data = [{
+  x: xValues,
+  y: yValues,
+  z: zValues,
+  type: 'heatmap',
+  colorscale: colorscaleValue,
+  //showscale: false
+}];
+
+Plotly.newPlot('containerHeatMap1', data, layout);
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////
+function plotHeatMap1(xValues, yValues, zValues, d1, d2)
+{
+
+//alert(xValues);
+var colorscaleValue = [
+  [0, '#3D9970'],
+  [100000, '#001f3f']
+];
+
+
+var layout = {
+  title: 'Read IO Stats' +" " + d1.toString() + " - " + d2.toString(),
+  xaxis: {
+	ticktext: xValues,
+    autorange: true,
+  /*  range: [d1, d2],
+    rangeselector: {buttons: [
+        {
+          count: 1,
+          label: '1h',
+          step: 'hour',
+          stepmode: 'backward'
+        },
+        {
+          count: 2,
+          label: '2h',
+          step: 'hour',
+          stepmode: 'forward'
+        },
+        {step: 'all'}
+      ]},
+    rangeslider: {range: [d1, d2]},*/
+    type: 'date'
+  },
+  yaxis: {
+    autorange: true
+    //range: [86.8700008333, 138.870004167],
+    //type: 'linear'
+  }
+};
+
+var data = [{
+  x: xValues,
+  y: yValues,
+  z: zValues,
+  type: 'heatmap',
+  colorscale: colorscaleValue,
+  //showscale: false
+}];
+
+Plotly.newPlot('containerHeatMap2', data, layout);
+}
+////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//#####################################################################
+function displayTimeSeriesChartForIOStats(IOStatsData)
+{
+	if (null != IOStatsData)
+	{
+
+		var AggrReadRate = d3.nest()
+		  .key(function(d) { return d.Time; })
+		  .rollup(function(v) { return {
+										AggregateReadrate: d3.sum(v, function(d) { return Math.round(d.TotalReadBytes/(8*1000000)); }) ,
+										AggregateWriterate:d3.sum(v, function(d) { return Math.round(d.TotalWriteBytes/(8*1000000)); }) 
+									  };
+
+			 })
+		  .entries(IOStatsData);
+
+		var ReadRate = AggrReadRate.map(function(d){
+					return {
+						"x":d.key,
+						"y":d.values["AggregateReadrate"] }
+		});
+
+		var WriteRate = AggrReadRate.map(function(d){
+					return {
+						"x":d.key,
+						"y":d.values["AggregateWriterate"] }
+		});
+
+		Highcharts.chart('container2', {
+		    chart: {
+
+		    },
+		    title: {
+		        text: 'Aggregate OST Read Rates'
+		    },
+		    xAxis: {
+		        categories: unpack(ReadRate, "x")
+		    },
+		    yAxis: {
+		        title: {
+		            text: 'MBytes per second'
+		        }
+		    },
+		 series: [{
+			name: 'Aggregate Read Rates across all OSTs and Jobs',
+				data: unpack(ReadRate, "y")
+			}]
+			/*{	
+		        name: 'Aggregate OST Write Rates',
+		        data: unpack(WriteRate, "y")
+		    }]*/
+		});
+		Highcharts.chart('container1', {
+		    chart: {
+
+		    },
+		    title: {
+		        text: 'Aggregate Write Rates across all OSTs and Jobs'
+		    },
+		    xAxis: {
+		        categories: unpack(ReadRate, "x")
+		    },
+		    yAxis: {
+		        title: {
+		            text: 'MBytes per second'
+		        }
+		    },
+		 series: [{
+			name: 'Aggregate OST Write Rates',
+				data: unpack(WriteRate, "y")
+			}]
+			/*{	
+		        name: 'Aggregate OST Write Rates',
+		        data: unpack(WriteRate, "y")
+		    }]*/
+		});
+	}
+
+}
+
+//###################################################################
+function processIOData(iIOData)
+{
+///"Date","Time","OST","TotalReadBytes","TotalWriteBytes","TimeStampToStr"
+
+	iIOData.forEach(function(data) {
+		data.Date = data.Date;
+		data.Time = data.Time;
+		data.OST  = data.OST;
+		data.TotalReadBytes = +data.TotalReadBytes;
+		data.TotalWriteBytes = +data.TotalWriteBytes;
+		data.TimeStampToStr = data.TimeStampToStr;
+		dd = data.TimeStampToStr.substring(0,2);
+		mmm = data.TimeStampToStr.substring(2,5);
+		yyyy = "20" + data.TimeStampToStr.substring(5,7);
+		time =data.TimeStampToStr.substring(8);
+
+		timestamp = Date.parse(dd + " " + mmm +" " + yyyy + " " + time + " " + "GMT+0530");
+		data.ts = new Date(timestamp);
+
+	});
+	IODataSET = iIOData;
+
+
+	displayTimeSeriesChartForIOStats(IODataSET);
+ /* // time graph
+  timeChart.width(960)
+    .height(150)
+    .transitionDuration(500)
+    .margins({top: 10, right: 10, bottom: 20, left: 40})
+    .dimension(dim1)
+    .group(grp1)
+    .title(function(d){
+    "Total Bytes Read per second";
+      });
+*/
+
+
+/*	 var heatMapData = d3.nest()
+		.key(function(d) { return d.OST;})
+		.key(function(d) { return d.Date + " " + d.Time ;}) //+ " - " + d.OST;})
+		.rollup(function(v) {return {
+			totalRead: d3.sum(v, function(d) { return d.ReadBytes; }),
+			totalWrite: d3.sum(v, function(d) { return d.WriteBytes; })
+	  		}; })
+	  .entries(IODataSET);
+
+	//alert(JSON.stringify(heatMapData))
+	//x = unpack(heatMapData, 'key');
+
+	x = [];
+	y = [];
+	z1 = [];
+	z2 = [];
+	y = unpack(heatMapData, "key"); //OSTs
+	x1 =unpack(heatMapData[0]["values"], "key"); //Date
+
+	for (i = 0; i < x1.length ; i++)
+	{
+
+			dd = x1[i].substring(0,2);
+			mmm = x1[i].substring(2,5);
+			yyyy = "20" + x1[i].substring(5,7);
+			time = x1[i].substring(8);
+
+			timestamp = Date.parse(dd + " " + mmm +" " + yyyy + " " + time);
+			ts = new Date(timestamp);
+	//		alert(timestamp.getDate());
+			x.push(ts);
+
+	}
+
+	d1 = x[0];
+	d2 = x[x.length -1];
+
+	for(i =0; i < heatMapData.length; i++) 
+	{ 
+
+			arr1 = unpack(heatMapData[i]['values'], "values");	
+			z1.push(unpack(arr1, "totalRead"));
+			z2.push(unpack(arr1, "totalWrite"));
+
+	}*/
+
+
+	x = [];
+	y = [];
+	z1 = [];
+	z2 = [];
+	x1  = unpack(IODataSET, "TimeStampToStr");
+	y  = unpack(IODataSET, "OST");
+	z1 = unpack(IODataSET, "TotalReadBytes");
+	z2 = unpack(IODataSET, "TotalWriteBytes");
+
+//Date 2018-01-17T06:26:00.000Z
+	for (i = 0; i < x1.length; i++)
+	{
+
+			dd = x1[i].substring(0,2);
+			mmm = x1[i].substring(2,5);
+			yyyy = "20" + x1[i].substring(5,7);
+			time = x1[i].substring(8);
+
+			timestamp = Date.parse(dd + " " + mmm +" " + yyyy + " " + time + " " + "GMT+0530");
+			ts = new Date(timestamp);
+			//alert(ts.toISOString());
+			x.push(ts.toISOString());
+
+	}
+
+	d1 = x1[0];
+	d2 = x1[x1.length -1];
+
+	plotHeatMap1(x,y,z1,d1, d2);
+	plotHeatMap2(x,y,z2,d1, d2);
+}
+
+</script>
+</html>
+	

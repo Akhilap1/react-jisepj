@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Active Jobs</title>
+ <!-- Core CSS - Include with every page -->
+        <link rel="stylesheet" type="text/css" href= "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> 
+        <!-- link rel="stylesheet" type="text/css" href= "http://www.serc.iisc.in/~hpc/WebPages/css/bootstrap.min.css" -->
+
+    <!-- SB Admin CSS - Include with every page -->
+    <!---link href="css/sb-admin.css" rel="stylesheet"-->
+    <link rel="stylesheet" type="text/css" href= "https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css"> 
+        <!---link rel="stylesheet" type="text/css" href= "http://www.serc.iisc.in/~hpc/WebPages/css/dataTables.bootstrap.min.css" -->  
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.6/dc.css"/> 
+        <link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style> 
+        <!--link rel="stylesheet" href="http://www.serc.iisc.in/~hpc/WebPages/css/jquery.dataTables.min.css"></style -->
+    <!--link href="../HOME/HPC_AccountingSideBar.css" rel="stylesheet" -->
+    <!-- <link href="font-awesome-4.3.0/css/font-awesome.min.css" rel="stylesheet">  -->
+    <link rel="stylesheet" href="../css/jquery-ui.css">
+
+        <!-- Bootstrap Date-Picker Plugin -->
+        <script type="text/javascript" src="../css/bootstrap-datepicker.min.js"></script>
+        <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/> -->
+        <link rel="stylesheet" href="../css/bootstrap-datepicker3.css"/>
+
+        <!-- Flatpicker Plugin -->
+        <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css"> 
+        <!-- link rel="stylesheet" href="http://www.serc.iisc.in/~hpc/WebPages/css/flatpickr.min.css" -->
+        <!-- <script src="https://unpkg.com/flatpickr"></script> -->
+        <script src="../js/flatpickr.js"></script>
+
+		
+		 <!-- plotly.js  -->
+        <script src="../js/plotly-latest.min.js"></script>
+
+        <!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> -->
+        <script type="text/javascript" src="../js/jquery.min.js"></script>
+       <!-- <script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script> -->
+        <script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+        <!-- <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> -->
+        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!--        <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+        <script src="../js/jquery-1.12.4.js"></script>
+    <!--        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+        <script src="../js/jquery-ui.js"></script>
+
+        <script type="text/javascript" src="canvasJS/canvasjs.min.js"></script>
+
+        <!-- d3.js -->
+        <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script> -->
+        <script type="text/javascript" src="../js/crossfilter.js"></script>
+        <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script> -->
+        <script type="text/javascript" src="../js/d3.js" charset="utf-8"></script>
+        <!-- <script src="https://d3js.org/d3-queue.v3.min.js"></script> -->
+        <script src="../js/d3-queue.v3.min.js"></script>
+        <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.6/dc.js"></script> -->
+        <script type="text/javascript" src="../js/dc.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js"></script> -->
+    <script src="../js/jsencrypt.min.js"></script>
+
+
+
+<style> /* set the CSS */
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+
+/* Ensure that the demo table scrolls */
+/* Ensure that the demo table scrolls */
+    th, td { white-space: wrap; }
+.table-condensed{
+  font-size: 12px;
+}
+</style>
+
+    <script> 
+//#################################################################
+    $(function(){
+			$("#sidebar").load("SideBarAdminNew.html");
+			verifyLogin(false);
+			//setNavigation();
+
+	});
+
+//#################################################################
+	function verifyLogin(mustVerify) {
+
+		if (mustVerify == true)
+		{
+
+			  $.ajax({
+					type:'GET',
+					url:"PHP/SideBar.php",      
+					success:function(res, textStatus, jXHR) {
+
+						try {
+								$ext_auth = JSON.parse(res );
+								if( $ext_auth['result']  == 1 ) {
+									console.log("Login Success "+res);
+
+									if ($ext_auth['role'] == "admin")
+									{
+										$("#sidebar").load("SideBarAdminNew.html");
+
+									}
+									else
+									{
+										$("#sidebar").load("SideBarNew.html");
+									}
+
+									//$("#sidebar").load("SideBar.html");
+									$('#LoginLogout').html("Logout");
+									//setNavigation();
+								}
+								else{
+					 				alert("Please Login");
+							   		$("#page-content-wrapper").hide();
+									$("#sidebar").load("PHP/UserLogin.php");
+								}
+					}catch(e)
+					{
+			 				alert(res);
+					   		$("#page-content-wrapper").hide();
+							$("#sidebar").load("PHP/UserLogin.php");
+
+					}
+					}, error: function(request,testStatus,errorThrown) {
+						alert("Please Login");
+					   $("#page-content-wrapper").hide();
+					   $("#sidebar").load("PHP/UserLogin.php");
+					}
+				});
+
+		}
+		else {
+				$("#sidebar").load("SideBarAdminNew.html");
+				$('#LoginLogout').html("Logout");
+				///LoginLogout
+				//setNavigation();
+		}
+	}
+
+
+//#################################################################
+	function setNavigation() {
+		var path = window.location.pathname;
+		path = path.replace(/\/$/, "");
+		path = decodeURIComponent(path);
+		var filename = path.substr(path.lastIndexOf("/")+1);
+		//alert(filename);
+		$(".nav-stacked a").each(function () {
+		    var href = $(this).attr('href');
+			href = href.substr(href.lastIndexOf("/")+1);
+		    if (href == filename) {
+		        $(this).closest('li').addClass('active');
+		    }
+		});
+	}
+ 
+
+    </script> 
+
+</head>
+<body>
+ <div >
+	<img src = "../HOME/facility-header-nodiv-crop.png" width ="100%"/>
+  </div>
+
+
+    <div id="wrapper">
+      <!-- Sidebar -->
+ 		<div id="sidebar"></div>
+
+		<div id= "NoRunningJobsStatusMsg" style="display:none">
+			<p style="font-familty:verdana; font-size:300%; text-align:center; "> There are no jobs currently running on SahsaraT</p>
+		</div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div id="auth-spinner" style="display:none;"><center><img src="ajax-loader.gif"></center></div>
+			<button id="bRefresh" type="button" onclick="pollFunc(readAllCSVs, 100000, 10000);" class="btn btn-success">Refresh</button>
+			<div id= "StatusMsg">
+				<p> The jobs currently active in the system.</p>
+			</div>
+            <div class="container-fluid xyz">
+                <div class="row">
+ 					<div id="head1" class="col-sm-12" >	
+					  <div class="col-sm-12" >
+					    <div  id="select1" style="border-none" ;>
+							<p>	<a class='reset' href='javascript:select1.filterAll();dc.redrawAll();' style='visibility: hidden;'>reset</a></p>
+						</div>
+					 </div>
+					</div>
+				</div>
+                <div class="row">
+					</br>
+				</div>
+                <div class="row">
+ 					<div id="head1" class="col-sm-12" >	
+				        <div>
+	
+	 						<div class="panel panel-success">
+					            <div id="custom_heading" class="panel-heading" style="border-bottom:5px solid green;" >
+					               Core Hour Utilization for Running Jobs
+					            </div>
+							</div>
+							<div class=" panel-body fixed-panel" id = "ContainerQueue" style="height: 500px; " >
+							
+							  <div class = "row">
+								  <div class ="col-sm-6" id="chart-ring-queue" style="width:500px; height:330px">Queue-wise distribution of Core Hours
+										[Click on a QUEUE on the pie to customise for that Queue]
+									<div class="reset btn btn-success" style="visibility: hidden;white-space: normal; width:300px">Filters: <span class="filter"></span>
+									  <a href="javascript:queueRingChart.filterAll();dc.redrawAll();"><b> click to reset</b></a>
+									</div>
+								  </div>
+
+								  <div class ="col-sm-6" id="chart-ring-dept" style="width:500px; height:330px">Dept-wise distribution of Core Hours
+										[Click on a DEPT on the pie to customise for that Dept]
+									<div class="reset btn btn-success" style="visibility: hidden;white-space: normal; width:300px">Filters: <span class="filter"></span>
+									  <a href="javascript:deptRingChart.filterAll();dc.redrawAll();"><b> click to reset</b></a>
+									</div>
+								  </div>
+							  </div>
+
+							  <div class = "row">
+							  	<div class ="col-sm-6" id ="custom_user_pie" style="width:500px; height:300px;">
+							  	</div> 
+							  	<div class ="col-sm-6" id="chart-ring-user" style="width:500px; height:330px">User-wise distribution of Core Hours
+									[Click on a USER on the pie to customise for that User]
+									<div class="reset btn btn-success" style="visibility: hidden;white-space: normal; width:300px">Filters: <span class="filter"></span>
+								  	<a href="javascript:userRingChart.filterAll();dc.redrawAll();"><b> click to reset</b></a>
+									</div>
+							  	</div>
+							  </div>
+ 
+							</div>
+							</br>
+
+						</div>
+					</div>
+				</div>
+						</br>
+				        <div class="row col-sm-12">
+		 					<div class="panel panel-success ">
+					            <div class="panel-heading" style="border-bottom:5px solid green;" >
+								Running Jobs
+					            </div>
+								<div class="panel-body" id = "Container2" style="height: 800px; width:80%" >
+								<div class='row'>
+								<div class='span10'>
+										<table id="dc-table-graph" class="table table-striped table-bordered table-condensed" cellspacing="0" style="width: 80%">  
+										<thead>
+										  <tr class="header">
+											<th>Supervisor</th>
+											<th>Dept</th>
+											<th>Queue</th>
+											<th>Username</th>
+											<th>JobID</th>
+											<th>Nodes</th>
+											<th>Core Hours Used</th>	
+											<th>Start time</th>	
+											<th>Cabinets List</th>	
+										  </tr>
+										</thead>
+									  </table>
+								</div>
+								</div>
+								</div>
+							</div>
+						</div>
+  <div id="page-content-wrapper">
+           <div class="container-fluid xyz">
+                <div id="auth-spinner" style="display:none;"><center><img src="ajax-loader.gif"></center></div>
+
+                                <div class="row">
+                                <div  class="col-lg-4" >
+                                  <div class="dropdown"  id = "job-dropdown" class="col-lg-4">
+
+                        <!-- button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"  id="job-dropdown-select" >Dropdown Example
+                         <span class="caret"></span> </button -->
+
+                                        <b>Select a jobID: <select id="job-dropdown-select"  class="form-control selcls" id="job-dropdown-select">Users
+                                        </select> </b>
+                                  </div>
+                                </div>
+                                </div>
+                                <div class="row panel-primary">
+                                  <div class="panel-heading">Read Bytes</div>
+                                 <div class="panel panel-body" id="container1"  style="height:400px; width:800px"></div>
+                                </div>
+                                <div class="row panel-primary" >
+                                  <div class="panel-heading">Write Bytes</div>
+                                 <div class="panel panel-body" id="container2" style="height:400px; width:800px"></div>
+                                </div>
+                                <div>
+                                    <div id="container3"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-8" id="containerHeatMap1" style="width: 600px"></div>
+                                    <div class="col-lg-8"id="containerHeatMap2" style="width: 600px"></div>
+                                </div>
+                </div>
+                </div>
+
+
+					</div>
+				</div>
+			</div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+
+//#######################################################
+//#######################################################
+$.noConflict();
+$(document).ready(function () {
+
+	//$( "#CustomDates" ).hide();
+	//$("#period").load("./StaticCoreUsageDates.txt");
+	//readAllCSVsFromPhp();
+	readAllCSVs();
+	//setNavigation();
+
+	//var retVal = readDataFromCSV();
+	//pollFunc(readAllCSVs, 100000, 10000);
+});
+
+var queueRingChart   = dc.pieChart("#chart-ring-queue");
+var deptRingChart = dc.pieChart("#chart-ring-dept");
+var userRingChart = dc.pieChart("#chart-ring-user");
+var select1 = dc.selectMenu('#select1');
+
+var chart = dc.dataTable("#dc-table-graph");
+
+//var select1 = dc.selectMenu('#select1');
+var LoginUserId ="";
+var LoginUserName = "";
+var LoginUserRole ="";
+
+var dataset = [];
+var dataset1 = [];
+var dataset2 = [];
+var dataset3 = [];
+var max_nodes = 1468;
+//c0 <- c(0:191)
+//c1 <- c(192:383)
+//c2 <- c(384:575)
+//c3 <- c(576:767)
+//c4 <- c(768:959)
+//c5 <- c(960:1151)
+//c6 <- c(1152:1343)
+//c7 <- c(1344:1535)
+c0 = makeArray(0, 191);
+c1 = makeArray(192, 383);
+c2 = makeArray(384, 575);
+c3 = makeArray(576, 767);
+c4 = makeArray(768, 959);
+c5 = makeArray(960, 1151);
+c6 = makeArray(1152, 1343);
+c7 = makeArray(1344, 1535);
+    
+//#################################################################
+function unpack(rows, key) {
+    return rows.map(function(row) { return row[key]; });
+}
+
+//#################################################################
+function join(lookupTable, mainTable, lookupKey, mainKey, select) {
+    var l = lookupTable.length,
+        m = mainTable.length,
+        lookupIndex = [],
+        output = [];
+    for (var i = 0; i < l; i++) { // loop through l items
+        var row = lookupTable[i];
+        lookupIndex[row[lookupKey]] = row; // create an index for lookup table
+    }
+    for (var j = 0; j < m; j++) { // loop through m items
+        var y = mainTable[j];
+        var x = lookupIndex[y[mainKey]]; // get corresponding row from lookupTable
+		if (x === undefined)
+		{
+			x = y[mainKey];
+			//alert(y[mainKey]);
+			output.push(select(y, x)); // select only the columns you need
+		}
+		else
+		{
+        	output.push(select(y, x)); // select only the columns you need
+		}
+    }
+    return output;
+};
+
+//#################################################################
+function readAllCSVsFromPhp()
+{
+
+ var JobsData = [];
+ var UserData = [];
+ var DeptData = [];
+ var LoginData = [];
+ $('#auth-spinner').show();
+ $.ajaxSetup({async: false});
+
+ $.ajax({
+       type: "GET",
+        url: "PHP/getUserData.php",
+ 		data: { dataname: "AllRunningJobs"},
+        success: function(response) {
+			JobsData = JSON.parse(response);
+			console.log(JobsData);
+
+			}, error: function(request,testStatus,errorThrown) {
+			alert(errorThrown);
+            console.log("Login Failed" + errorThrown);
+        }
+    });
+
+ $.ajax({
+       type: "GET",
+        url: "PHP/getUserData.php",
+ 		data: { dataname: "Departments"},
+        success: function(response) {
+			DeptData = JSON.parse(response);
+			console.log(DeptData);
+
+			}, error: function(request,testStatus,errorThrown) {
+			alert(errorThrown);
+            console.log("Login Failed" + errorThrown);
+        }
+    });
+
+ $.ajax({
+       type: "GET",
+        url: "PHP/getUserData.php",
+ 		data: { dataname: "UserInformation"},
+        success: function(response) {
+			UserData = JSON.parse(response);
+			console.log(UserData);
+
+			}, error: function(request,testStatus,errorThrown) {
+			alert(errorThrown);
+            console.log("Login Failed" + errorThrown);
+        }
+    });
+ $.ajax({
+       type: "GET",
+        url: "PHP/getUserData.php",
+ 		data: { dataname: "LoginInformation"},
+        success: function(response) {
+			LoginData = JSON.parse(response);
+			console.log(LoginData);
+
+			}, error: function(request,testStatus,errorThrown) {
+			alert(errorThrown);
+            console.log("Login Failed" + errorThrown);
+        }
+    });
+
+if (JobsData == null)
+{
+	$("#NoRunningJobsStatusMsg").show();
+	$("#page-content-wrapper").hide();
+}
+else
+{
+	$("#NoRunningJobsStatusMsg").hide();
+	$("#page-content-wrapper").show();
+	doStuff(JobsData, DeptData, UserData, LoginData);
+}
+ $('#auth-spinner').hide();
+$.ajaxSetup({async: true});
+
+}
+
+
+//#################################################################
+var tabulate = function (data,columns) {
+  var table = d3.select('body').append('table')
+	var thead = table.append('thead')
+	var tbody = table.append('tbody')
+
+	thead.append('tr')
+	  .selectAll('th')
+	    .data(columns)
+	    .enter()
+	  .append('th')
+	    .text(function (d) { return d })
+
+	var rows = tbody.selectAll('tr')
+	    .data(data)
+	    .enter()
+	  .append('tr')
+
+	var cells = rows.selectAll('td')
+	    .data(function(row) {
+	    	return columns.map(function (column) {
+	    		return { column: column, value: row[column] }
+	      })
+      })
+      .enter()
+    .append('td')
+      .text(function (d) { return d.value })
+
+  return table;
+}
+
+//#################################################################
+function readD3(res){
+
+
+      		d3.csv(res, function(data) {
+						data.JobID = data.JobID;
+						data.username = data.username;
+						data.queue = data.queue;
+						data.nodes = +data.nodes;
+						data.date = data.date;
+						data.time = data.time;
+						data.dept = data.username.substr(0, 3) ;
+
+						if (data.dept.substr(0,2) == "ug")
+						{
+							data.dept="ug";
+						}
+						data.JobStart = parseDate.parse(data.date+currentYear+ " " + data.time);
+						if (data.JobStart > today)
+						{
+							data.JobStart = parseDate.parse(data.date+prevYear+ " " + data.time);
+						}
+
+						data.SecsSinceStart = (today - data.JobStart)/1000;
+						data.corehours = Math.round(data.SecsSinceStart/3600 * data.nodes * 24);
+						//console.log(data);
+			});
+			data;
+}
+
+//#################################################################
+function readAllCSVs(){
+	d3.queue()
+	.defer(d3.csv, "./DATA/RunningJobs.csv")
+	.defer(d3.csv, "./DATA/Depts.csv")
+	.defer(d3.csv, "./DATA/CrayUserData.csv")
+	.await(function(error, file1, file2, file3) {
+		if (error) {
+		    console.error('Oh dear, something went wrong: ' + error);
+		}
+		else {
+		    doStuff(file1, file2, file3);
+		}
+	});
+}
+
+//#################################################################
+function doStuff(JobData, DeptData, UserData, LoginData)
+{
+	var today = new Date();
+	var parseDate = d3.time.format("%d%b%Y %H:%M");
+	var columns = ['username','queue','nodes','JobStart'];
+  	var currentYear = today.getFullYear();
+	var prevYear = currentYear -1;
+
+	LoginUserName = "secprba"; //LoginData.username;
+	LoginUserId = "secpraba";//LoginData.userid;
+	LoginUserRole = "admin";//LoginData.role;
+
+	
+	UserData.forEach(function(data) {
+		data.index = data.index;
+		data.userid = data.userid.substring(0,8);
+		data.username = data.username;
+		data.course = data.course;
+		data.supervisor2 = data.supervisor2;
+		data.Dept = data.Dept;
+	});
+
+
+	JobData.forEach(function(data) {
+		data.JobID = data.JobID;
+		data.username = data.username;
+		data.queue = data.queue;
+		data.nodes = +data.nodes;
+		data.date = data.date;
+		data.time = data.time;
+		data.dept = data.username.substr(0, 3) ;
+
+		if (data.dept.substr(0,2) == "ug")
+		{
+			data.dept="ug";
+		}
+		data.JobStart = parseDate.parse(data.date+currentYear+ " " + data.time);
+		if (data.JobStart > today)
+		{
+			data.JobStart = parseDate.parse(data.date+prevYear+ " " + data.time);
+		}
+
+		data.SecsSinceStart = (today - data.JobStart)/1000;
+		data.corehours = Math.round(data.SecsSinceStart/3600 * data.nodes * 24);
+		data.cabinetsList = getCabinetsList(data.node_range);
+		//console.log(data);
+	});
+
+
+	//##################################################################
+	DeptData.forEach(function(data) {
+		data.Acronym = data.Acronym;
+		data.Definition = data.Definition;
+		//console.log(data);
+	});
+
+	//console.log(file1);
+	//var	r1 = join(DeptData, JobData, "Acronym", "dept");
+	var result = join(DeptData, JobData, "Acronym", "dept", 
+						function(Job, Dept) {
+												return { //Dept,Job
+													JobID: Job.JobID,
+													userid: Job.username,
+													queue: 	Job.queue,
+													nodes: 	Job.nodes,
+													date: 	Job.date,
+													time:	Job.time,
+													dept:	Job.dept,
+													JobStart: Job.JobStart,
+													corehours: Job.corehours,
+													cabinetsList: Job.cabinetsList,
+													deptName: Dept.Definition
+												};
+											});
+
+	DeptData.forEach(function(data) {
+		data.Acronym = data.Acronym;
+		data.Definition = data.Definition;
+		//console.log(data);
+	});
+
+	//console.log(file1);
+	//var	r1 = join(DeptData, JobData, "Acronym", "dept");
+	var result = join(UserData, result, "userid", "userid", 
+						function(job, user) {
+												return { //Dept,Job
+
+													JobID: job.JobID,
+													userid: job.userid,
+													queue: 	job.queue,
+													nodes: 	job.nodes,
+													date: 	job.date,
+													time:	job.time,
+													dept:	job.dept,
+													JobStart: job.JobStart,
+													corehours: job.corehours,
+													cabinetsList: job.cabinetsList,
+													deptName: job.deptName,
+													username: user.username,
+													supervisor:user.supervisor2
+
+												};
+											});
+
+
+
+
+	////Filter only jobs for LoginUser /LoginSupervisor
+
+	result.forEach(function(data) {
+		if (data.username === undefined)
+		{
+			data.username = data.userid;
+		}
+	});
+
+	
+	var filteredData = 	result;
+
+	if (LoginUserRole == "SUPERVISOR")
+	{
+	   filteredData = result.filter(function (d) {return d.supervisor === LoginUserName;});
+		$("#select1").hide();
+		$("#chart-ring-queue").hide();
+		$("#chart-ring-user").hide();
+		$("#chart-ring-sup").hide();
+		$("#chart-ring-dept").hide();
+
+		customPieChartForUserorSuperVisor(filteredData, result);
+	}
+	else if (LoginUserRole == "USER")
+	{
+	   filteredData = result.filter(function (d) {return d.userid === LoginUserId;});
+		$("#select1").hide();
+		$("#chart-ring-user").hide();
+		$("#chart-ring-sup").hide();
+		$("#chart-ring-dept").hide();
+		$("#chart-ring-queue").hide();
+		customPieChartForUserorSuperVisor(filteredData, result);
+	}
+	else
+	{
+		$("#custom_user_pie").hide();
+	}
+	console.log(filteredData);
+	console.log(result);
+
+	if (filteredData.length == 0)
+	{
+		alert('No Running Jobs for ' + LoginUserName);
+		$("#custom_user_pie").hide();
+		//SummariseUsingCrossFilter(result, result);
+	}
+	else
+	{
+		SummariseUsingCrossFilter(filteredData, result);
+	}
+}
+
+
+//##################################################################
+//##################################################################
+function customPieChartForUserorSuperVisor(iDataSet, allData)
+{
+
+var titleStr = "<b> Share of Core Hours in use by ";
+
+if(LoginUserRole == "SUPERVISOR")
+{
+	titleStr += "Research Group of :" + LoginUserName +"</b>";
+}
+else
+{
+	titleStr +=  LoginUserName +"</b>";
+
+}
+$("#custom_heading").html(titleStr);
+//titleStr = titleStr + "</p>";
+var layout = {
+//title:titleStr,
+
+  margin: {
+    l: 50,
+    r: 50,
+    b: 100,
+    t: 100,
+    pad: 10
+  },
+ // paper_bgcolor: '#7f7f7f',
+ // plot_bgcolor: '#c7c7c7',
+  height: 500,
+  width: 500
+};
+
+var total_core_hours = d3.sum(allData, function(d) { return d.corehours;})
+
+var expenseMetrics = d3.nest()
+  .key(function(d) { return d.username; })
+  .rollup(function(v) { return {
+    total: d3.sum(v, function(d) { return d.corehours; })
+  }; })
+  .entries(iDataSet);
+
+
+var uniqueUsers = expenseMetrics.map(function(d) {
+	return d.key;
+});
+
+var uniqueUsage = expenseMetrics.map(function(d) {
+	return d.values["total"];
+});
+
+
+uniqueUsers.push("Others");
+uniqueUsage.push(total_core_hours - d3.sum(iDataSet, function(d) { return d.corehours;}));
+
+var data = [{
+  values: uniqueUsage,
+  labels: uniqueUsers,
+  type: 'pie',
+  name: '%',
+ // marker: {
+ //   colors: ultimateColors[0]
+ // },
+  hoverinfo: 'percent+name',
+  textinfo: 'label'
+}]
+ 
+Plotly.newPlot('custom_user_pie', data, layout);
+
+
+}
+//##################################################################
+//##################################################################
+function SummariseUsingCrossFilter(iDataSet, allData){
+
+	dataset = iDataSet;
+	/*var ndx = crossfilter(allData),
+
+    queueDim  = ndx.dimension(function(d) {return d.queue;}),
+    deptDim = ndx.dimension(function(d) {return d.deptName;}),
+    userDim  = ndx.dimension(function(d) {return d.username;}),
+    supDim = ndx.dimension(function(d) {return d.supervisor;}),
+    numNodesPerQueue = queueDim.group().reduceSum(function(d) {return d.nodes;}),
+ 	numNodesPerDept = deptDim.group().reduceSum(function(d) {return d.nodes;}),
+ 	numNodesPerUser = userDim.group().reduceSum(function(d) {return d.nodes;}),
+    numNodesPerSup = supDim.group().reduceSum(function(d) {return d.nodes;});*/
+
+
+	var ndx1 = crossfilter(iDataSet),
+    queueDim  = ndx1.dimension(function(d) {return d.queue;}),
+    deptDim = ndx1.dimension(function(d) {return d.deptName;}),
+    userDim  = ndx1.dimension(function(d) {return d.username;}),
+    supDim = ndx1.dimension(function(d) {return d.supervisor;}),
+    coreHoursPerQueue = queueDim.group().reduceSum(function(d) {return d.corehours;}),
+ 	coreHoursPerDept = deptDim.group().reduceSum(function(d) {return d.corehours;}),
+ 	coreHoursPerUser = userDim.group().reduceSum(function(d) {return d.corehours;}),
+    coreHoursPerSup = supDim.group().reduceSum(function(d) {return d.corehours;})
+    numNodesPerQueue = queueDim.group().reduceSum(function(d) {return d.nodes;}),
+ 	numNodesPerDept = deptDim.group().reduceSum(function(d) {return d.nodes;}),
+ 	numNodesPerUser = userDim.group().reduceSum(function(d) {return d.nodes;}),
+    numNodesPerSup = supDim.group().reduceSum(function(d) {return d.nodes;})
+    jobidDim = ndx1.dimension(function(d) {return d.JobID;}),
+    numNodesPerJobID = jobidDim.group().reduceSum(function(d) {return d.nodes;});
+
+
+  //###########  Ring Chart for Queue wise breakup of Jobs
+  queueRingChart
+    .width(400)
+    .height(250)
+	.cx(150)
+	.cy(0)
+    .slicesCap(10)
+    .innerRadius(50)
+      //    .externalLabels(30)
+    .externalRadiusPadding(20)
+    .drawPaths(true)
+    .legend(dc.legend().x(300).y(50))
+    .dimension(queueDim)
+    .group(coreHoursPerQueue)
+    .controlsUseVisibility(true);
+
+
+
+      // example of formatting the legend via svg
+      // http://stackoverflow.com/questions/38430632/how-can-we-add-legends-value-beside-of-legend-with-proper-alignment
+      queueRingChart.on('pretransition', function(chart) {
+          queueRingChart.selectAll('.dc-legend-item text')
+              .text('')
+            .append('tspan')
+              .text(function(d) { return d.name; })
+            .append('tspan')
+              .attr('x', 100)
+              .attr('text-anchor', 'end')
+              .text(function(d) { return d.data; });
+      });
+
+  //###########  Ring Chart for Queue wise breakup of Jobs
+  deptRingChart
+   .width(500)
+    .height(250)
+	.cx(150)
+	.cy(0)
+    .slicesCap(10)
+    .innerRadius(50)
+      //    .externalLabels(50)
+      //    .externalRadiusPadding(50)
+    .externalRadiusPadding(20)
+    .drawPaths(true)
+    .legend(dc.legend().x(300).y(50))
+    .dimension(deptDim)
+    .group(coreHoursPerDept)
+    .controlsUseVisibility(true);
+
+
+ //###########  Ring Chart for User wise breakup of Jobs
+  userRingChart
+   .width(500)
+    .height(250)
+	.cx(150)
+	.cy(0)
+    .slicesCap(20)
+    .innerRadius(50)
+      //    .externalLabels(50)
+      //    .externalRadiusPadding(50)
+    .externalRadiusPadding(20)
+    .drawPaths(true)
+    .legend(dc.legend().x(300).y(50))
+    .dimension(userDim)
+    .group(coreHoursPerUser)
+    .controlsUseVisibility(true)
+	//.filter(filter_str);
+
+    chart
+        .width(500)
+        .height(500)
+        .dimension(jobidDim)
+        .group(function(d) {return d.JobId;})	
+        .size(Infinity)
+	    .showGroups(true)
+        .columns([
+			  function (d) { return d.supervisor },
+              function (d) { return d.dept },
+              function (d) { return d.queue },
+              function (d) { return d.username }, 
+              function (d) { return d.JobID }, 
+			  function (d) { return d.nodes},
+			  function (d) { return d.corehours},
+			  function (d) { return d.date + d.time},
+			  function (d) { return d.cabinetsList}
+		 ])
+        .order(d3.ascending);
+
+
+	// create a select menu under #select-container using the default global chart group
+    select1.dimension(supDim)
+    .group(supDim.group())
+	.promptText("All Supervisors")
+    .controlsUseVisibility(true);
+
+
+    $('#dc-table-graph').DataTable({
+        scrollY:        "300px",
+        scrollX:        true,
+        scrollCollapse: true,
+        paging:         false,
+        columnDefs: [
+            { width: 150, targets: 0 }
+        ],
+        fixedColumns: true
+    });
+	dc.renderAll();
+    //$('#dc-table-graph td').css('white-space','initial');
+
+ 
+
+	//customPieChartForUserorSuperVisor(iDataSet, allData);
+
+
+}
+
+//################################################################################
+//################################################################################
+function refreshTopJobs(deptFilters,queueFilters, supervisorFilters){
+
+		dataset1 = dataset;
+	    if (queueFilters.length == 0 & deptFilters.length == 0 & supervisorFilters.length == 0)
+		{
+			var rowsFiltered = dataset;
+		}
+		else
+		{
+			var rowsFiltered = dataset.filter(function(row) {
+
+				return ((supervisorFilters.length == 0 || supervisorFilters.indexOf(row.supervisor ) > -1) &
+						(queueFilters.length  == 0 || queueFilters.indexOf(row.queue ) > -1) &
+						(deptFilters.length == 0|| deptFilters.indexOf(row.deptName ) > -1));
+
+
+		 });
+		}
+		rowsFiltered = rowsFiltered.sort(function (a,b) {return d3.descending(a.corehours, b.corehours); });
+		$('#myPanel').empty();
+
+		maxIndex = Math.min(rowsFiltered.length, 10);
+
+		for(i=0; i < maxIndex; i++)
+		{
+
+			var Dept = 	rowsFiltered[i].deptName;
+			var Username = 	rowsFiltered[i].username;
+			var Queue = 	rowsFiltered[i].queue;
+			var JobID = 	rowsFiltered[i].JobID;
+			var StartTime = 	rowsFiltered[i].JobStart;
+			var CoreHours = 	rowsFiltered[i].corehours;
+			var CabinetsList = 	rowsFiltered[i].cabinetsList;
+
+			divData='   <div class="panel-body" style=" border-bottom:2px solid green;"> '+
+						'<div id= "Job"'+i + '"><b>Department:</b> '+ Dept + '</div>' +
+									'<div ><b>      User:</b> ' + Username + '</div> '+
+									'<div ><b>     Queue:</b> ' + Queue + '</div> '+
+									'<div ><b>     JobID:</b> ' + JobID + '</div> '+
+									'<div ><b>Start Time:</b> ' +StartTime  + '</div> '+
+									'<div ><b>Core Hours:</b> ' + CoreHours + '</div> '+
+									'<div ><b>Cabinets List:</b> ' + CabinetsList + '</div> '+
+						'</div>';
+
+		
+			$('#myPanel').append(divData);
+		}
+
+}
+
+//#########################################################
+function pollFunc(fn, timeout, interval) {
+    var startTime = (new Date()).getTime();
+    interval = interval || 1000;
+    canPoll = true;
+    (function p() {
+	///alert("refreshing");
+	 $('#StatusMsg').empty();
+			divData='   <div> '+ 'Last Updated at ....<b>' + new Date() +	'</b>'+	
+						'</div>';
+
+		
+			$('#StatusMsg').append(divData);
+
+
+				canPoll = ((new Date).getTime() - startTime ) <= timeout;
+				if (!fn() && canPoll)  { // ensures the function exucutes
+				    setTimeout(p, interval);
+				}
+				if (canPoll)
+				{
+					//$('#bRefresh').Enable
+				    $("#bRefresh").attr("disabled", true);
+
+				}
+				else
+				{
+					$("#bRefresh").removeAttr("disabled");
+				}
+	
+    })();
+}
+
+deptRingChart.on('filtered.chart-ring-queue', function() {
+   // alert(deptRingChart.filters().join(','));
+//refreshTopJobs(deptRingChart.filters(), queueRingChart.filters(),select1.filters());
+
+});
+
+queueRingChart.on('filtered.chart-ring-queue', function() {
+   // alert(queueRingChart.filters().join(','));
+//refreshTopJobs(deptRingChart.filters(), queueRingChart.filters(),select1.filters());
+
+
+});
+select1.on('filtered.select1', function() {
+//refreshTopJobs(deptRingChart.filters(), queueRingChart.filters(),select1.filters());
+});
+
+//#################################################################
+function reinit(chart)
+{
+    // Get the div id of the chart requesting to be DataTable'd
+    var chart_anchor_id = '#' + chart.anchorName()
+    // Destroy the current DataTable (if any)
+    t = new $.fn.dataTable.Api($(chart_anchor_id))
+    t.destroy()
+    // Remove the 'group' as this won't work with DataTables
+    $(chart_anchor_id + ' .dc-table-group').remove()
+    // Reinit the jQuery dataTable
+    $(chart_anchor_id).dataTable({bFilter: false});
+};
+
+
+chart.on("postRender", function(chart){reinit(chart)}).on("postRedraw", function(chart){reinit(chart)});
+
+
+////=======================================================
+function makeArray(start,end) {
+   var result = [];
+   for(var i= start; i <=end; i++)
+   {
+      result.push(i);
+   }
+   return result;
+}
+
+/** =======================================================
+ * @description determine if an array contains one or more items from another array.
+ * @param {array} haystack the array to search.
+ * @param {array} arr the array providing items to check for in the haystack.
+ * @return {boolean} true|false if haystack contains at least one item from arr.
+ */
+var findOne = function (haystack, arr) {
+    return arr.some(function (v) {
+        return haystack.indexOf(v) >= 0;
+    });
+};
+
+////=======================================================
+function getCabinetsList(nodesList) {
+
+    var str = nodesList; 
+///"685;687-703;708-739;891;935-939;957-965;1029;1082-1083;1174-1179;1181-1182;1185-1186;1219-1222;1227-1228;1377;1383;1405;1417;1428-1429;1442;1483-1484;1486-1492;1494-1513";
+    
+    var allNodes = [];
+    var allCabinets = [];
+
+    var res = str.split(";");
+    
+    for(i=0; i < res.length; i++)
+    {
+    	var res1 = res[i].split("-");
+        
+        if(res1.length == 1)
+        {
+           allNodes.push(parseInt(res1[0]));
+        }
+        else
+        {
+            
+        	var res2 = makeArray(parseInt(res1[0]), parseInt(res1[1]));
+            for(j = 0; j < res2.length; j++)
+            {
+               allNodes.push(parseInt(res2[j]));
+            }
+        }
+
+    }
+    
+    if (findOne(allNodes, c0))
+    {
+    	allCabinets.push("c0");
+    }
+    if (findOne(allNodes, c1))
+    {
+    	allCabinets.push("c1");
+    }
+    if (findOne(allNodes, c2))
+    {
+    	allCabinets.push("c2");
+    }
+    if (findOne(allNodes, c3))
+    {
+    	allCabinets.push("c3");
+    }
+    if (findOne(allNodes, c4))
+    {
+    	allCabinets.push("c4");
+    }
+    if (findOne(allNodes, c5))
+    {
+    	allCabinets.push("c5");
+    }
+    if (findOne(allNodes, c6))
+    {
+    	allCabinets.push("c6");
+    }
+    if (findOne(allNodes, c7))
+    {
+    	allCabinets.push("c7");
+    }
+    return allCabinets.join("|");
+;
+}
+
+</script>
+<!-----------------        FOR IO STATS OF RUNNING JOBS   -->
+<!-- script src="../HOME/HPC_AccountingSideBAR.js"></script -->
+

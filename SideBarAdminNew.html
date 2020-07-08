@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Active Jobs</title>
+
+
+	<link rel="stylesheet" type="text/css" href= "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <!-- link href="../HOME/HPC_AccountingSideBar.css" rel="stylesheet"/ -->
+	<!-- script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script -->
+  	<!-- script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script -->
+
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+<div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">SERC - Analytics</a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+		<li id="LoginLogout">	
+			<a href="../UserDashboard/PHP/SercLogout.php"><span class="fa-stack fa-lg pull-left"><i class="fa fa-cloud-download fa-stack-1x "></i></span><b>Logout </b></a>
+		</li>
+	  </ul>
+
+      <ul class="nav navbar-nav">
+       <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">SahasraT User Statistics <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+	          <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-cloud-download fa-stack-1x "></i></span><b>Current Statistics</b> <span class="caret"></span></a>
+				<ul class="nav-pills nav-stacked" style="list-style-type:none;">	
+  		        <li><a href="../UserDashboard/RunningJobs.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Running Jobs</a></li>
+  		        <li><a href="../UserDashboard/QueuedJobs.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Queued Jobs</a></li>
+  				<li><a href="../UserDashboard/CurrentNodesUpStatus.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Utilization</a></li>
+  				<li><a href="../UserDashboard/IOStatsheatmaps.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>IO Stats</a></li>
+  				<li><a href="../UserDashboard/IOStatsRunningJobs.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>IO Stats-RunningJobs</a></li>
+				</ul>
+   				<li role="separator" class="divider"></li>
+	          	<a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-cloud-download fa-stack-1x "></i></span><b>Monthly Statistics</b> <span class="caret"></span></a>
+				<ul class="nav-pills nav-stacked" style="list-style-type:none;">
+              <li><a href="../UserDashboard/MonthlyCrayInvoiceExternal.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Utilization - External Users </a></li>	
+  		        <li><a href="../UserDashboard/MonthlyCrayInvoice.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>XC40 Invoice </a></li>
+  		        <li><a href="../UserDashboard/ResourceUtilization.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Resource Utilization </a></li>
+  				<li><a href="../UserDashboard/HPCApplications.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>HPC Application and Workload  </a></li>
+  		        <li><a href="../UserDashboard/JobWallTimes.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Job Wall Time</a></li>
+  				<li><a href="../UserDashboard/MonthlyQueueWaitTime.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>QueueWaitTime </a></li>
+  		        <li><a href="../UserDashboard/JobEfficiencyQWaitTimeIOStats.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Job Efficiency </a></li>
+				</ul>
+    			<li role="separator" class="divider"></li>
+	          	<a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-cloud-download fa-stack-1x "></i></span><b>Annual Statistics</b> <span class="caret"></span></a>
+				<ul class="nav-pills nav-stacked" style="list-style-type:none;">	
+  		        <li><a href="../UserDashboard/ResourceUtilizationAnnual.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Resource Utilization </a></li>	
+  				<li><a href="../UserDashboard/SystemOutageCalendar.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>System Outage Calendar</a></li>
+				</ul>
+	  </ul>
+	  </li>
+	  </ul>
+      <ul class="nav navbar-nav" >
+       <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">SahasraT -System Overview<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+			<ul class="nav-pills nav-stacked" style="list-style-type:none;">	
+             <li><a href="../CRAY/StaticCoreUsageReport.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>System Utilization</a></li>
+             <li><a href="../CRAY/StaticJobSummaryReport.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Job Summary</a></li>
+             <li><a href="../CRAY/StaticJobExitCodeReport.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Job Exit Codes</a></li>
+			 <li><a href="../CRAY/MonthlyCoreWastage.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Resource Wastage (Cores)</a></li>
+           	 <li><a href="../CRAY/CrayQueueWaitTimeReport.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Queue Wait Time</a></li>
+             <li><a href="../CRAY/CrayReport.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Department Wise Utilization </a></li>
+        	 <li><a href="../CRAY/CrayEfficiencyReport.html"><span class="fa-stack fa-lg pull-left"><i class="fa fa-flag fa-stack-1x "></i></span>Job Efficiency</a></li>
+			</ul>
+ 		  </ul>
+        </li>
+	  </ul> 
+
+      <ul class="nav navbar-nav" >
+       <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Other HPC Clusters<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+			<ul class="nav-pills nav-stacked" style="list-style-type:none;">	
+   				<li><a href="../OTHERCLUSTERS/ClusterTyrone.html">Tyrone</a></li>
+                <li><a href="../OTHERCLUSTERS/ClusterFermi.html">Fermi</a></li>
+                <li><a href="../OTHERCLUSTERS/ClusterTesla.html">Tesla</a></li>
+                <li><a href="../OTHERCLUSTERS/ClusterDelta.html">Delta</a></li>
+               	<li><a href="../OTHERCLUSTERS/ClusterDell.html">Dell</a></li>
+			</ul>
+          </ul>
+       </li>
+	  </ul>
+      <ul class="nav navbar-nav">
+        <li>
+            <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-youtube-play fa-stack-1x "></i></span>About</a>
+        </li>
+	  </ul>
+	  <ul class="nav navbar-nav">
+        <li>
+            <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-wrench fa-stack-1x "></i></span>Services</a>
+        </li>
+	  </ul>
+	  <ul class="nav navbar-nav">
+        <li>
+            <a href="#"><span class="fa-stack fa-lg pull-left"><i class="fa fa-server fa-stack-1x "></i></span>Contact</a>
+        </li>
+	  </ul>
+	</div>
+</div>
+</nav>
+
+
+</body>
+<!-- script src="../HOME/HPC_AccountingSideBAR.js"></script -->
+<script>
+   $(function(){
+
+
+		var path = window.location.pathname;
+		path = path.replace(/\/$/, "");
+		path = decodeURIComponent(path);
+		var filename = path.substr(path.lastIndexOf("/")+1);
+		//alert(filename);
+		if (path.indexOf("CRAY") > 0)
+		{
+			$("#StaticReports").addClass('active');
+			$("#UserPortal").removeClass('active');
+			$("#BatchClusters").removeClass('active');
+		}
+		else if (path.indexOf("OTHERCLUSTERS") > 0)
+		{
+			$("#StaticReports").removeClass('active');
+			$("#UserPortal").removeClass('active');
+			$("#BatchClusters").addClass('active');
+		}
+		else
+		{
+			$("#StaticReports").removeClass('active');
+			$("#UserPortal").addClass('active');
+			$("#BatchClusters").removeClass('active');
+
+		}
+		$(".nav-stacked a").each(function () {
+		    var href = $(this).attr('href');
+			href = href.substr(href.lastIndexOf("/")+1);
+		    if (href === filename) {
+		        $(this).closest('li').addClass('active');
+				$(this).closest('li').addClass('active').siblings().removeClass('active');
+		    }
+		});
+
+	});
+</script>
+
+</html>
